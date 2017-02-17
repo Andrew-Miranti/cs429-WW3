@@ -3,9 +3,9 @@ using System.IO;
 
 public class World
 {
-    public const int WIDTH = 1024;
+    public const int WIDTH = 512;
 
-    public const int HEIGHT = 512;
+    public const int HEIGHT = 256;
 
     public const float MAXLAT = 90f;
 
@@ -53,7 +53,13 @@ public class World
         const int POP_IDX = 4;
 
         string[] cityData = cityString.Split(new char[] { ',' });
-        City city = new City(cityData[NAME_IDX], int.Parse(cityData[POP_IDX]));
+        if (cityData.Length != 9)
+        {
+            // for now, if the city parsed is invalid, just silently fail to add it to the map
+            return;
+        }
+
+        City city = new City(cityData[NAME_IDX], (int)float.Parse(cityData[POP_IDX]));
         float latitude = float.Parse(cityData[LAT_IDX]);
         float longitude = float.Parse(cityData[LONG_IDX]);
 

@@ -1,34 +1,74 @@
 using System;
+using System.Collections.Generic;
 
 public class Game
 {
+    private readonly World world;
+    private int currentPlayer;
+    private List<Player> players;
+
+    public Game()
+    {
+        // initialize world
+        this.world = new World("maps.csv");
+
+        // set up players list. for now, just add two players.
+        this.players = new List<Player>();
+        this.players.Add(new Player());
+        this.players.Add(new Player());
+        this.currentPlayer = 0;
+    }
+
     public static void Main(string[] args)
     {
-        Console.WriteLine("Hello Game"); // TODO: Change
+        new Game().Launch();
     }
 
     public Player GetCurrentPlayer()
     {
-        return null; // TODO: Change
+        return this.players[this.currentPlayer];
     }
 
-    public Player GetNextPlayer()
+    public void AdvancePlayer()
     {
-        return null; // TODO: Change
-    }
-
-    public void Build()
-    {
-        // TODO: Change
+        this.currentPlayer = (this.currentPlayer + 1) % this.players.Count;
     }
 
     public void Launch()
     {
-        // TODO: Change
+        Console.WriteLine("Welcome to WW3 - type 'quit' to exit.");
+        string last;
+        while ((last = Console.ReadLine()) != "quit")
+        {
+            if (last == "print")
+            {
+                this.Print();
+            }
+            else
+            {
+                Console.WriteLine("Command not recognized.");
+            }
+        }
     }
 
     public void Print()
     {
-        // TODO: Change
+        for (int x = 0; x < World.WIDTH; x++)
+        {
+            for (int y = 0; y < World.HEIGHT; y++)
+            {
+                Province p = this.world.GetProvinceAt(new Pos(x, y));
+                if (p.City != null)
+                {
+                    Console.Write(p.City.Name.Substring(0, 1));
+                }
+                else
+                {
+                    Console.Write("*");
+                }
+            }
+
+            Console.WriteLine(string.Empty);
+        }
     }
 }
