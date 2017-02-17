@@ -1,7 +1,12 @@
 public class City
 {
-    public int GetPoints()
+    public City(string name, int points)
     {
-        return 0; // TODO: Change
+        this.Name = name;
+        this.Points = points;
     }
+
+    public string Name { get; }
+
+    public int Points { get; }
 }
