@@ -3,12 +3,13 @@ using System.Text.RegularExpressions;
 
 public class REPL
 {
-    private const string Commands = @"help|end|mv|quit|print|capture|feed|resources|undo";
+    private const string Commands = @"help|end|mv|quit|print|capture|feed|resources|undo|gather";
     private static readonly Regex Command = new Regex(@"(" + Commands + @")");
     private static readonly Regex Move = new Regex(@"mv (\d+) (\d+),(\d+)");
     private static readonly Regex Capture = new Regex(@"capture (\d+)");
     private static readonly Regex Feed = new Regex(@"feed (\d+) (\d+)");
     private static readonly Regex Undo = new Regex(@"undo (\d+)");
+    private static readonly Regex Gather = new Regex(@"gather (\d+)");
     private readonly Game game;
     private readonly Window window;
 
@@ -27,13 +28,14 @@ public class REPL
         Console.WriteLine("print => Prints the current state of the world to the terminal");
         Console.WriteLine("feed id => Feeds an army from the player's food stockpile to heal it");
         Console.WriteLine("undo id => Moves an army back to its original position for the turn");
+        Console.WriteLine("gather id => Actively gathers resources under an army (consuming its turn)");
         Console.WriteLine("quit => exits the REPL and closes out the game");
     }
 
     public void EndCommand()
     {
         game.CurrentPlayer.CommitMoves();
-        game.World.Tick();
+        game.Tick();
         game.AdvancePlayer();
     }
 
@@ -63,7 +65,7 @@ public class REPL
             }
             else
             {
-                Console.WriteLine("Movement out of range");
+                Console.WriteLine("Illegal movement");
             }
         }
         else
@@ -102,6 +104,32 @@ public class REPL
         else
         {
             Console.WriteLine("Command must match: capture [0-9]+");
+        }
+    }
+
+    public void GatherCommand(string input)
+    {
+        Player player = game.CurrentPlayer;
+        var capture = Gather.Match(input);
+        if (capture.Success)
+        {
+            var index = int.Parse(capture.Groups[1].Value);
+
+            if (player.ArmyExists(index) && !player.HasArmyActed(index))
+            {
+                var armyPosition = player.ArmyPosition(index);
+                var province = game.World.GetProvinceAt(armyPosition);
+                province.Gather(player);
+                player.ArmyActed(index);
+            }
+            else
+            {
+                Console.WriteLine("Invalid Army Index");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Command must match: gather [0-9]+");
         }
     }
 
@@ -168,6 +196,10 @@ public class REPL
                 Console.WriteLine("Army index invalid or not enough food");
             }
         }
+        else
+        {
+            Console.WriteLine("Command must match feed [0-9]+ [0-9]+");
+        }
     }
 
     public void Launch()
@@ -219,6 +251,10 @@ public class REPL
                 else if (match.Value == "undo")
                 {
                     UndoCommand(input);
+                }
+                else if (match.Value == "gather")
+                {
+                    GatherCommand(input);
                 }
             }
             else

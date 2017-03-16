@@ -34,6 +34,39 @@ public class Player
         return null;
     }
 
+    public Army GetArmyAt(Pos position)
+    {
+        foreach (Army army in ArmyList)
+        {
+            if (army.Position.Equals(position))
+            {
+                return army;
+            }
+        }
+
+        return null;
+    }
+
+    public bool HasArmyActed(int id)
+    {
+        var army = GetArmy(id);
+        if (army == null)
+        {
+            return false;
+        }
+
+        return originals.ContainsKey(army) || army.Moved;
+    }
+
+    public void ArmyActed(int id)
+    {
+        var army = GetArmy(id);
+        if (army != null)
+        {
+            army.Moved = true;
+        }
+    }
+
     public bool ArmyExists(int id)
     {
         return id >= 0 && id < ArmyList.Count;

@@ -16,6 +16,8 @@ public class Army
         MoveRange = DefaultMoveRange;
     }
 
+    public bool Moved { get; set; }
+
     public Pos Position { get; set; }
 
     public int Range { get; private set; }
@@ -37,7 +39,7 @@ public class Army
 
     public bool CanMoveTo(Pos target)
     {
-        return DistanceTo(target) <= MoveRange;
+        return !Moved && DistanceTo(target) <= MoveRange;
     }
 
     public int DistanceTo(Pos target)
@@ -47,7 +49,8 @@ public class Army
 
     public void Tick()
     {
-        /* No-Op for now, may change into attack code in the future (i.e. armies attack enemies and capture territory at the end of their turn) */
+        Moved = false;
+        /* Just restore Moved for now, may change into attack code in the future (i.e. armies attack enemies and capture territory at the end of their turn) */
     }
 
     public void Render()
