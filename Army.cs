@@ -30,6 +30,16 @@ public class Army
         this.Health = Math.Min(this.Health, maxHealth);
     }
 
+    public void MoveTo(Pos target)
+    {
+        Position = target;
+    }
+
+    public bool CanMoveTo(Pos target)
+    {
+        return DistanceTo(target) <= MoveRange;
+    }
+
     public int DistanceTo(Pos target)
     {
         return Math.Abs(target.X - Position.X) + Math.Abs(target.Y - Position.Y);

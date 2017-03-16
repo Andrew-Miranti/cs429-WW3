@@ -1,15 +1,14 @@
 using System;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using OpenTK;
 
 public class REPL
 {
-    private const string Commands = @"help|end|mv|quit|print|capture|feed|resources";
+    private const string Commands = @"help|end|mv|quit|print|capture|feed|resources|undo";
     private static readonly Regex Command = new Regex(@"(" + Commands + @")");
     private static readonly Regex Move = new Regex(@"mv (\d+) (\d+),(\d+)");
     private static readonly Regex Capture = new Regex(@"capture (\d+)");
     private static readonly Regex Feed = new Regex(@"feed (\d+) (\d+)");
+    private static readonly Regex Undo = new Regex(@"undo (\d+)");
     private readonly Game game;
     private readonly Window window;
 
@@ -26,15 +25,15 @@ public class REPL
         Console.WriteLine("mv ArmyId TargetX,TargetY => Moves the army ArmyId owned by the player to TargetX,TargetY iff the move is legal");
         Console.WriteLine("capture ArmyId Changes territory under armyId's control to the current player");
         Console.WriteLine("print => Prints the current state of the world to the terminal");
+        Console.WriteLine("feed id => Feeds an army from the player's food stockpile to heal it");
+        Console.WriteLine("undo id => Moves an army back to its original position for the turn");
         Console.WriteLine("quit => exits the REPL and closes out the game");
     }
 
     public void EndCommand()
     {
+        game.CurrentPlayer.CommitMoves();
         game.AdvancePlayer();
-
-        // TODO: Implement
-        // originals = new Dictionary<Army, Pos>();
     }
 
     public void MoveCommand(string input)
@@ -51,13 +50,19 @@ public class REPL
 
             Console.WriteLine(" " + index + " " + x + " " + y);
 
+            if (!player.ArmyExists(index))
+            {
+                Console.WriteLine("Illegal army id");
+                return;
+            }
+
             if (player.CanMoveArmy(index, target))
             {
                 player.MoveArmy(index, target);
             }
             else
             {
-                Console.WriteLine("Illegal Movement");
+                Console.WriteLine("Movement out of range");
             }
         }
         else
@@ -96,6 +101,29 @@ public class REPL
         else
         {
             Console.WriteLine("Command must match: capture [0-9]+");
+        }
+    }
+
+    public void UndoCommand(string input)
+    {
+        Player player = game.CurrentPlayer;
+        var capture = Undo.Match(input);
+        if (capture.Success)
+        {
+            var index = int.Parse(capture.Groups[1].Value);
+
+            if (player.ArmyExists(index))
+            {
+                player.UndoMove(index);
+            }
+            else
+            {
+                Console.WriteLine("Invalid Army Index");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Command must match: undo [0-9]+");
         }
     }
 
@@ -186,6 +214,10 @@ public class REPL
                 else if (match.Value == "feed")
                 {
                     FeedCommand(input);
+                }
+                else if (match.Value == "undo")
+                {
+                    UndoCommand(input);
                 }
             }
             else

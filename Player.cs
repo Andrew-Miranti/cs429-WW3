@@ -2,9 +2,12 @@ using System.Collections.Generic;
 
 public class Player
 {
+    private Dictionary<Army, Pos?> originals;
+
     public Player(Color c)
     {
         ArmyList = new List<Army>();
+        originals = new Dictionary<Army, Pos?>();
         Color = c;
         Resources = new ResourceBag();
     }
@@ -21,32 +24,19 @@ public class Player
         ArmyList.Add(army);
     }
 
-    public bool CanMoveArmy(int armyId, Pos toPos)
+    public Army GetArmy(int id)
     {
-        if (armyId >= ArmyList.Count)
+        if (ArmyExists(id))
         {
-            return false;
+            return ArmyList[id];
         }
 
-        Army army = ArmyList[armyId];
-        if (army.DistanceTo(toPos) > army.MoveRange)
-        {
-            return false;
-        }
-
-        return true;
+        return null;
     }
 
-    public bool ArmyExists(int armyId)
+    public bool ArmyExists(int id)
     {
-        if (armyId >= ArmyList.Count)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+        return id >= 0 && id < ArmyList.Count;
     }
 
     public bool FeedArmy(int armyId, int foodAmount)
@@ -65,9 +55,45 @@ public class Player
         return ArmyList[armyId].Position;
     }
 
+    public bool CanMoveArmy(int armyId, Pos toPos)
+    {
+        if (!ArmyExists(armyId))
+        {
+            return false;
+        }
+
+        var army = GetArmy(armyId);
+        Pos originalPosition = UnmovedPosition(army);
+        Pos startingPosition = army.Position;
+        army.Position = originalPosition;
+        var result = army.CanMoveTo(toPos);
+        army.Position = startingPosition;
+        return result;
+    }
+
+    public void UndoMove(int armyId)
+    {
+        var army = GetArmy(armyId);
+        if (army != null)
+        {
+            army.Position = UnmovedPosition(army);
+        }
+    }
+
+    public void CommitMoves()
+    {
+        originals.Clear();
+    }
+
     public void MoveArmy(int armyId, Pos toPos)
     {
-        ArmyList[armyId].Position = toPos;
+        var army = GetArmy(armyId);
+        if (!originals.ContainsKey(army))
+        {
+            originals.Add(army, army.Position);
+        }
+
+        army.Position = toPos;
     }
 
     public void RemoveArmy(Army army)
@@ -90,5 +116,12 @@ public class Player
     public string ResourcesString()
     {
         return Resources.ToString();
+    }
+
+    private Pos UnmovedPosition(Army army)
+    {
+        Pos? storedPosition;
+        originals.TryGetValue(army, out storedPosition);
+        return storedPosition.HasValue ? storedPosition.Value : army.Position;
     }
 }
