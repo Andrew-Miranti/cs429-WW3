@@ -29,7 +29,7 @@ public class Province
         if (City != null)
         {
             this.passiveResources.SetAmountOf(ResourceType.Food, 0);
-            this.passiveResources.SetAmountOf(ResourceType.Weapons, 1);
+            this.passiveResources.SetAmountOf(ResourceType.Weapons, 3);
 
             this.activeResources.SetAmountOf(ResourceType.Food, 10);
             this.activeResources.SetAmountOf(ResourceType.Weapons, 5);
@@ -37,7 +37,7 @@ public class Province
         else
         {
             this.passiveResources.SetAmountOf(ResourceType.Food, 0);
-            this.passiveResources.SetAmountOf(ResourceType.Weapons, 0);
+            this.passiveResources.SetAmountOf(ResourceType.Weapons, 1);
 
             this.activeResources.SetAmountOf(ResourceType.Food, 2);
             this.activeResources.SetAmountOf(ResourceType.Weapons, 0);

@@ -118,6 +118,14 @@ public class Player
         return Resources.ToString();
     }
 
+    public void Tick()
+    {
+        foreach (var army in ArmyList)
+        {
+            army.Tick();
+        }
+    }
+
     private Pos UnmovedPosition(Army army)
     {
         Pos? storedPosition;

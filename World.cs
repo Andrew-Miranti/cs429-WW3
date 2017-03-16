@@ -46,6 +46,17 @@ public class World
         return provinceGrid[pos.X, pos.Y];
     }
 
+    public void Tick()
+    {
+        for (int i = 0; i < WIDTH; ++i)
+        {
+            for (int j = 0; j < HEIGHT; ++j)
+            {
+                provinceGrid[i, j].Tick();
+            }
+        }
+    }
+
     public void Render()
     {
         for (int x = 0; x < WIDTH; x++)

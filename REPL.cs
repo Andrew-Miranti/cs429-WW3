@@ -33,6 +33,7 @@ public class REPL
     public void EndCommand()
     {
         game.CurrentPlayer.CommitMoves();
+        game.World.Tick();
         game.AdvancePlayer();
     }
 

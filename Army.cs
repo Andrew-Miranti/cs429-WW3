@@ -45,6 +45,11 @@ public class Army
         return Math.Abs(target.X - Position.X) + Math.Abs(target.Y - Position.Y);
     }
 
+    public void Tick()
+    {
+        /* No-Op for now, may change into attack code in the future (i.e. armies attack enemies and capture territory at the end of their turn) */
+    }
+
     public void Render()
     {
         GL.MatrixMode(MatrixMode.Modelview);

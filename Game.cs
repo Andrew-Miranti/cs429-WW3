@@ -44,6 +44,15 @@ public class Game
         CurrentPlayerIndex = (CurrentPlayerIndex + 1) % players.Count;
     }
 
+    public void Tick()
+    {
+        world.Tick();
+        foreach (var player in players)
+        {
+            player.Tick();
+        }
+    }
+
     public void Print()
     {
         for (int x = 0; x < World.WIDTH; x++)
