@@ -21,9 +21,10 @@ public class Window : GameWindow
 
     public void Render(Army army)
     {
+        var pos = game.Manager.ArmyPosition(army);
         GL.MatrixMode(MatrixMode.Modelview);
         GL.PushMatrix();
-        GL.Translate(army.Position.X, army.Position.Y, 0);
+        GL.Translate(pos.X, pos.Y, 0);
         GL.Begin(PrimitiveType.Triangles);
         GL.Vertex2(0.7f, 0.3f);
         GL.Vertex2(0.5f, 0.7f);
@@ -146,7 +147,7 @@ public class Window : GameWindow
         {
             playerID = game.CurrentPlayerIndex;
             pos = new Pos(x, y);
-            army = player.GetArmyAt(pos);
+            army = game.Manager.ArmyAt(pos);
             if (army != null)
             {
                 Console.WriteLine("Army clicked.");
@@ -160,7 +161,7 @@ public class Window : GameWindow
         else if (clickFlag == 1)
         {
             pos = new Pos(x, y);
-            if (army.CanMoveTo(pos) == true)
+            if (game.Manager.CanMoveTo(army, pos) == true)
             {
                 Console.WriteLine("Press 'y' now to confirm move.");
                 clickFlag = 2;
@@ -176,7 +177,7 @@ public class Window : GameWindow
     {
         if (e.KeyChar == 'y' && clickFlag == 2)
         {
-            army.MoveTo(pos);
+            game.Manager.MoveArmy(army, pos);
             Console.WriteLine("Army has moved.");
             clickFlag = 0;
         }

@@ -1,3 +1,5 @@
+using System;
+
 public struct Pos
 {
     public int X;
@@ -8,6 +10,16 @@ public struct Pos
     {
         X = x;
         Y = y;
+    }
+
+    public int DistanceTo(Pos target)
+    {
+        return Math.Abs(target.X - X) + Math.Abs(target.Y - Y);
+    }
+
+    public bool IsInRange(Pos target, int range)
+    {
+        return DistanceTo(target) <= range;
     }
 
     // override object.Equals

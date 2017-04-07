@@ -1,11 +1,12 @@
+using System;
+using OpenTK.Graphics.OpenGL;
+
 public class Province
 {
     /**
      * Rate at which this province generates each resource
      * Indexed by the ResourceType enum
      */
-    private ResourceBag passiveResources;
-    private ResourceBag activeResources;
 
     private City city;
 
@@ -16,14 +17,18 @@ public class Province
 
     public Province(City city, Player owner)
     {
-        passiveResources = new ResourceBag();
-        activeResources = new ResourceBag();
+        PassiveResources = new ResourceBag();
+        ActiveResources = new ResourceBag();
         City = city;
         Owner = owner;
 
         // for now, default regen rates = 10 for food and 5 for weapons if there is a city, otherwise 0
         // it may be changed in the future (need to discuss design) s.t. cities generate resources and they permeate upwards or tweak interface
     }
+
+    public ResourceBag PassiveResources { get; private set; }
+
+    public ResourceBag ActiveResources { get; private set; }
 
     /**
      * The city contained in this province
@@ -41,19 +46,19 @@ public class Province
             city = value;
             if (city != null)
             {
-                this.passiveResources.SetAmountOf(ResourceType.Food, 0);
-                this.passiveResources.SetAmountOf(ResourceType.Weapons, 3);
+                this.PassiveResources.SetAmountOf(ResourceType.Food, 0);
+                this.PassiveResources.SetAmountOf(ResourceType.Weapons, 3);
 
-                this.activeResources.SetAmountOf(ResourceType.Food, 10);
-                this.activeResources.SetAmountOf(ResourceType.Weapons, 5);
+                this.ActiveResources.SetAmountOf(ResourceType.Food, 10);
+                this.ActiveResources.SetAmountOf(ResourceType.Weapons, 5);
             }
             else
             {
-                this.passiveResources.SetAmountOf(ResourceType.Food, 0);
-                this.passiveResources.SetAmountOf(ResourceType.Weapons, 1);
+                this.PassiveResources.SetAmountOf(ResourceType.Food, 0);
+                this.PassiveResources.SetAmountOf(ResourceType.Weapons, 1);
 
-                this.activeResources.SetAmountOf(ResourceType.Food, 2);
-                this.activeResources.SetAmountOf(ResourceType.Weapons, 0);
+                this.ActiveResources.SetAmountOf(ResourceType.Food, 2);
+                this.ActiveResources.SetAmountOf(ResourceType.Weapons, 0);
             }
         }
     }
@@ -70,7 +75,7 @@ public class Province
      */
     public void Tick()
     {
-        Owner?.Resources.Add(this.passiveResources);
+        Owner?.Resources.Add(this.PassiveResources);
     }
 
     /**
@@ -79,6 +84,6 @@ public class Province
      */
     public void Gather(Player player)
     {
-        player.Resources.Add(this.activeResources);
+        player.Resources.Add(this.ActiveResources);
     }
 }
