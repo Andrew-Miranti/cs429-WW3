@@ -7,9 +7,8 @@ public class Army
 
     private readonly int maxHealth = 100;
 
-    public Army(Pos position, int health)
+    public Army(int health)
     {
-        Position = position;
         Health = health;
         Range = DefaultRange;
         MoveRange = DefaultMoveRange;
@@ -17,33 +16,21 @@ public class Army
 
     public bool Moved { get; set; }
 
-    public Pos Position { get; set; }
-
     public int Range { get; private set; }
 
     public int MoveRange { get; private set; }
 
     public int Health { get; private set; }
 
+    public void TakeDamage(int hurt)
+    {
+        Health = Math.Max(Health - hurt, 0);
+    }
+
     public void FeedArmy(int food)
     {
         this.Health += food;
         this.Health = Math.Min(this.Health, maxHealth);
-    }
-
-    public void MoveTo(Pos target)
-    {
-        Position = target;
-    }
-
-    public bool CanMoveTo(Pos target)
-    {
-        return !Moved && DistanceTo(target) <= MoveRange;
-    }
-
-    public int DistanceTo(Pos target)
-    {
-        return Math.Abs(target.X - Position.X) + Math.Abs(target.Y - Position.Y);
     }
 
     public void Tick()

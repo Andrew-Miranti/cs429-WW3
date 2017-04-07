@@ -7,6 +7,10 @@ using OpenTK.Input;
 public class Window : GameWindow
 {
     private Game game;
+    private int playerID;
+    private Army army;
+    private int clickFlag = 0; // 0: initial state, 1: army clicked, 2: Confirmation step, clicking on the same spot will decrement it
+    private Pos pos;
 
     public Window(int width, int height, Game game)
         : base(width, height, GraphicsMode.Default, "WW3")
@@ -17,9 +21,10 @@ public class Window : GameWindow
 
     public void Render(Army army)
     {
+        var pos = game.Manager.ArmyPosition(army);
         GL.MatrixMode(MatrixMode.Modelview);
         GL.PushMatrix();
-        GL.Translate(army.Position.X, army.Position.Y, 0);
+        GL.Translate(pos.X, pos.Y, 0);
         GL.Begin(PrimitiveType.Triangles);
         GL.Vertex2(0.7f, 0.3f);
         GL.Vertex2(0.5f, 0.7f);
@@ -126,5 +131,55 @@ public class Window : GameWindow
         }
 
         SwapBuffers();
+    }
+
+    protected override void OnMouseDown(MouseButtonEventArgs e)
+    {
+        base.OnMouseDown(e);
+        var a = Mouse.GetCursorState();
+        float xratio = (float)Width / (float)World.WIDTH;
+        float yratio = (float)Height / (float)World.HEIGHT;
+        int x = (int)((float)a.X / (float)xratio);
+        int y = World.HEIGHT - (int)((float)a.Y / (float)yratio) - 1; // Subtract the Vasi's bars from the screen height
+        Console.WriteLine("x is: " + x + " y is: " + y);
+        Player player = game.CurrentPlayer;
+        if (clickFlag == 0)
+        {
+            playerID = game.CurrentPlayerIndex;
+            pos = new Pos(x, y);
+            army = game.Manager.ArmyAt(pos);
+            if (army != null)
+            {
+                Console.WriteLine("Army clicked.");
+                clickFlag = 1;
+            }
+            else
+            {
+                Console.WriteLine("Invalid click, not an army. Try again.");
+            }
+        }
+        else if (clickFlag == 1)
+        {
+            pos = new Pos(x, y);
+            if (game.Manager.CanMoveTo(army, pos) == true)
+            {
+                Console.WriteLine("Press 'y' now to confirm move.");
+                clickFlag = 2;
+            }
+            else
+            {
+                Console.WriteLine("Invalid move. Try again.");
+            }
+        }
+    }
+
+    protected override void OnKeyPress(OpenTK.KeyPressEventArgs e)
+    {
+        if (e.KeyChar == 'y' && clickFlag == 2)
+        {
+            game.Manager.MoveArmy(army, pos);
+            Console.WriteLine("Army has moved.");
+            clickFlag = 0;
+        }
     }
 }

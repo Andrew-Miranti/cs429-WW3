@@ -16,10 +16,7 @@ public class World
 
     private Province[,] provinceGrid = new Province[WIDTH, HEIGHT];
 
-    /**
-     * Create a grid from the specified csv file
-     */
-    public World(string filePath)
+    public World()
     {
         for (int i = 0; i < WIDTH; i++)
         {
@@ -28,7 +25,14 @@ public class World
                 provinceGrid[i, j] = new Province();
             }
         }
+    }
 
+    /**
+     * Create a grid from the specified csv file
+     */
+    public World(string filePath)
+        : this()
+    {
         using (StreamReader file = File.OpenText(filePath))
         {
             while (!file.EndOfStream)

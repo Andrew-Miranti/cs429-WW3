@@ -3,13 +3,14 @@ using System.Text.RegularExpressions;
 
 public class REPL
 {
-    private const string Commands = @"help|end|mv|quit|print|capture|feed|resources|undo|gather";
+    private const string Commands = @"help|end|mv|quit|print|capture|feed|resources|undo|gather|make";
     private static readonly Regex Command = new Regex(@"(" + Commands + @")");
     private static readonly Regex Move = new Regex(@"mv (\d+) (\d+),(\d+)");
     private static readonly Regex Capture = new Regex(@"capture (\d+)");
     private static readonly Regex Feed = new Regex(@"feed (\d+) (\d+)");
     private static readonly Regex Undo = new Regex(@"undo (\d+)");
     private static readonly Regex Gather = new Regex(@"gather (\d+)");
+    private static readonly Regex Make = new Regex(@"make (\d+),(\d+)");
     private readonly Game game;
     private readonly Window window;
 
@@ -34,9 +35,7 @@ public class REPL
 
     public void EndCommand()
     {
-        game.CurrentPlayer.CommitMoves();
-        game.Tick();
-        game.AdvancePlayer();
+        game.EndTurn();
     }
 
     public void MoveCommand(string input)
@@ -133,6 +132,32 @@ public class REPL
         }
     }
 
+    public void MakeCommand(string input)
+    {
+        Player player = game.CurrentPlayer;
+        var capture = Make.Match(input);
+        if (capture.Success)
+        {
+            var x = int.Parse(capture.Groups[1].Value);
+            var y = int.Parse(capture.Groups[2].Value);
+            var army = new Army(100);
+            var pos = new Pos(x, y);
+
+            if (player.CanPlaceArmy(army, pos))
+            {
+                player.AddArmy(army, pos);
+            }
+            else
+            {
+                Console.WriteLine("Position filled");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Command must match: make [0-9]+,[0-9]+");
+        }
+    }
+
     public void UndoCommand(string input)
     {
         Player player = game.CurrentPlayer;
@@ -170,7 +195,7 @@ public class REPL
 
     public void PrintCommand()
     {
-        game.Print();
+        Console.WriteLine("The print command has finally died.  RIP The print command");
     }
 
     public void ResourcesCommand()
@@ -255,6 +280,10 @@ public class REPL
                 else if (match.Value == "gather")
                 {
                     GatherCommand(input);
+                }
+                else if (match.Value == "make")
+                {
+                    MakeCommand(input);
                 }
             }
             else
