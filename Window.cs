@@ -19,6 +19,11 @@ public class Window : GameWindow
     private float centerY;
     private float scale; // scale = pixels per world square
 
+    private int endTurnButtonX;
+    private int endTurnButtonY;
+    private int endTurnButtonWidth;
+    private int endTurnButtonHeight;
+
     public Window(int width, int height, Game game)
         : base(width, height, GraphicsMode.Default, "WW3")
     {
@@ -27,6 +32,9 @@ public class Window : GameWindow
         centerX = World.WIDTH / 2;
         centerY = World.HEIGHT / 2;
         VSync = VSyncMode.On;
+        endTurnButtonY = 30;
+        endTurnButtonHeight = 45;
+        endTurnButtonWidth = 150;
     }
 
     public void Render(Army army)
@@ -126,6 +134,13 @@ public class Window : GameWindow
         }
     }
 
+    public void RenderEndTurn()
+    {
+        endTurnButtonX = (Width / 2) - 100;
+        Color.WHITE.Use();
+        GL.Rect(endTurnButtonX, endTurnButtonY, endTurnButtonX + endTurnButtonWidth, endTurnButtonY + endTurnButtonHeight);
+    }
+
     public void RenderHUD(World world)
     {
         // render HUD background
@@ -137,11 +152,18 @@ public class Window : GameWindow
         GL.Rect(0, 0, Width, HUDPIXELHEIGHT);
 
         RenderHealth();
+        RenderEndTurn();
 
         // render province info
-        world.GetProvinceAt(pos);
-        int food = 5;
-        int weapons = 12;
+        Province province = world.GetProvinceAt(pos);
+
+        int passiveFood = province.PassiveResources.GetAmountOf(ResourceType.Food);
+        int passiveWeapons = province.PassiveResources.GetAmountOf(ResourceType.Weapons);
+        int activeFood = province.ActiveResources.GetAmountOf(ResourceType.Food);
+        int activeWeapons = province.ActiveResources.GetAmountOf(ResourceType.Weapons);
+
+        int food = passiveFood;
+        int weapons = passiveWeapons;
         var right = Width;
         var foodX = right - 100;
         var gunX = right - 200;
@@ -244,6 +266,12 @@ public class Window : GameWindow
             player.Color.Use();
             foreach (var army in player.ArmyList)
             {
+                // if an army's health is 0, they are dead. Remove the army and don't render
+                if (army.Health == 0)
+                {
+                    player.RemoveArmy(army);
+                }
+
                 Render(army);
             }
 
@@ -275,12 +303,20 @@ public class Window : GameWindow
         int y = (int)worldY;
         Console.WriteLine("x is: " + x + " y is: " + y);
         Player player = game.CurrentPlayer;
-        if (clickFlag == 0)
+
+        // check if the end turn button was clicked
+        if (endTurnButtonX <= mouseX && mouseX <= (endTurnButtonX + endTurnButtonWidth) && endTurnButtonY <= mouseY && mouseY <= (endTurnButtonY + endTurnButtonHeight))
+        {
+            Console.WriteLine("Turn Ended");
+            game.EndTurn();
+        }
+
+        if (clickFlag == 0 && x >= 0 && x < World.WIDTH && y >= 0 && y < World.HEIGHT)
         {
             playerID = game.CurrentPlayerIndex;
             pos = new Pos(x, y);
             army = game.Manager.ArmyAt(pos);
-            if (army != null)
+            if (army != null && player.ArmyList.Contains(army))
             {
                 Console.WriteLine("Army clicked.");
                 clickFlag = 1;
@@ -290,12 +326,18 @@ public class Window : GameWindow
                 Console.WriteLine("Invalid click, not an army. Try again.");
             }
         }
-        else if (clickFlag == 1 || clickFlag == 2)
+        else if ((clickFlag == 1 || clickFlag == 2) && x >= 0 && x < World.WIDTH && y >= 0 && y < World.HEIGHT)
         {
             pos = new Pos(x, y);
-            if (game.Manager.CanMoveTo(army, pos) == true)
+            if (game.Manager.ArmyPosition(army).Equals(pos))
+            {
+                Console.WriteLine("Army unselected");
+                clickFlag = 0;
+            }
+            else if (game.Manager.CanMoveTo(army, pos) == true)
             {
                 Console.WriteLine("Press 'y' now to confirm move.");
+                Console.WriteLine("Press 'u' to undo the move");
                 clickFlag = 2;
             }
             else
@@ -311,6 +353,12 @@ public class Window : GameWindow
         {
             game.Manager.MoveArmy(army, pos);
             Console.WriteLine("Army has moved.");
+            clickFlag = 0;
+        }
+
+        if (e.KeyChar == 'u' && clickFlag == 2)
+        {
+            Console.WriteLine("Army has been moved back to its previous position");
             clickFlag = 0;
         }
 
@@ -346,7 +394,7 @@ public class Window : GameWindow
 
         if (e.KeyChar == 'n')
         {
-            game.AdvancePlayer();
+            game.EndTurn();
             Console.WriteLine("Ended turn");
         }
     }
