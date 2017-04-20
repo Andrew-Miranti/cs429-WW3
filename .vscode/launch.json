@@ -6,10 +6,10 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceRoot}/bin/Debug/netcoreapp1.1/junk.dll",
+            "program": "${workspaceRoot}/bin/Debug/netcoreapp1.1/cs429-WW3.dll",
             "args": [],
             "cwd": "${workspaceRoot}",
-            "externalConsole": true,
+            "console": "internalConsole",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart"
         },
@@ -17,7 +17,7 @@
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach",
-            "processId": "${command.pickProcess}"
+            "processId": "${command:pickProcess}"
         }
     ]
 }

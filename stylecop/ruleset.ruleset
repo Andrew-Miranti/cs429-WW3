@@ -3,6 +3,7 @@
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA0001" Action="None" /> <!-- Suppress comment analysis -->
     <Rule Id="SA1633" Action="None" /> <!-- Suppress header documentation -->
+    <Rule Id="SA1652" Action="None" /> <!-- Suppress XML documentation warning -->
     <Rule Id="SA1101" Action="None" /> <!-- Suppress Prefix local calls with this-->
   </Rules>
 </RuleSet>

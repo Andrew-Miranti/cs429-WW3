@@ -7,13 +7,10 @@
         {
             "taskName": "build",
             "args": [
-                "${workspaceRoot}/project.json"
+                "${workspaceRoot}/cs429-WW3.csproj"
             ],
             "isBuildCommand": true,
             "problemMatcher": "$msCompile"
-        },
-        {
-            "taskName": "test"
         }
     ]
 }
