@@ -112,6 +112,10 @@ public class Player
             ArmyList.Remove(army);
             manager.RemoveArmy(army);
         }
+        else
+        {
+            throw new System.ArgumentException("Attempt to remove army not owned by player");
+        }
     }
 
     public string ResourcesString()

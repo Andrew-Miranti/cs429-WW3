@@ -6,19 +6,20 @@ public class ResourceBag
      * Maps resource type to the amount of that resource at this province
      * Indexed by the ResourceType enum
      */
-    private int[] resourceCounts;
 
     public ResourceBag()
     {
-        this.resourceCounts = new int[Enum.GetNames(typeof(ResourceType)).Length];
+        this.ResourceCounts = new int[Enum.GetNames(typeof(ResourceType)).Length];
     }
+
+    public int[] ResourceCounts { get; private set; }
 
     /**
      * Returns amount of resource type requested in this bag
      */
     public int GetAmountOf(ResourceType resourceType)
     {
-        return this.resourceCounts[(int)resourceType];
+        return this.ResourceCounts[(int)resourceType];
     }
 
     /**
@@ -26,7 +27,7 @@ public class ResourceBag
      */
     public void SetAmountOf(ResourceType resourceType, int amount)
     {
-        this.resourceCounts[(int)resourceType] = amount;
+        this.ResourceCounts[(int)resourceType] = amount;
     }
 
     /**

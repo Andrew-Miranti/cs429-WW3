@@ -139,7 +139,6 @@ public class Window : GameWindow
         RenderHealth();
 
         // render province info
-        world.GetProvinceAt(pos);
         int food = 5;
         int weapons = 12;
         var right = Width;
@@ -237,7 +236,7 @@ public class Window : GameWindow
 
         GL.Clear(ClearBufferMask.ColorBufferBit);
 
-        World world = game.World;
+        World world = game.GameWorld;
         Render(world);
         foreach (var player in game.Players)
         {
@@ -346,7 +345,7 @@ public class Window : GameWindow
 
         if (e.KeyChar == 'n')
         {
-            game.AdvancePlayer();
+            game.EndTurn();
             Console.WriteLine("Ended turn");
         }
     }
