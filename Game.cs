@@ -1,11 +1,14 @@
-using System;
 using System.Collections.Generic;
 
 public class Game
 {
+    private const int MAXTICKS = 200;
+
     private Scorer scorer;
 
     private CombatResolver combat;
+
+    private int ticks = 0;
 
     public Game()
     {
@@ -53,6 +56,7 @@ public class Game
 
         combat.Engage(CurrentPlayer, Players);
         scorer.UpdateScores(World);
+        ticks += 1;
     }
 
     public void EndTurn()
@@ -64,5 +68,27 @@ public class Game
     public int ScorePlayer(Player player)
     {
         return scorer.GetScore(player);
+    }
+
+    public int WinCondition()
+    {
+        int winner = -1;
+
+        if (ticks >= MAXTICKS)
+        {
+            var maxScore = int.MinValue;
+
+            for (int i = 0; i < Players.Count; i++)
+            {
+                var score = scorer.GetScore(Players[i]);
+                if (score > maxScore)
+                {
+                    maxScore = score;
+                    winner = i;
+                }
+            }
+        }
+
+        return winner;
     }
 }

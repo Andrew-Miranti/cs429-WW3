@@ -13,6 +13,7 @@ public class REPL
     private static readonly Regex Make = new Regex(@"make (\d+),(\d+)");
     private readonly Game game;
     private readonly Window window;
+    private bool running = true;
 
     public REPL(Game game, Window window)
     {
@@ -36,6 +37,14 @@ public class REPL
     public void EndCommand()
     {
         game.EndTurn();
+
+        var winner = game.WinCondition();
+        if (winner > -1)
+        {
+            Console.WriteLine("Player " + winner + " won!");
+            QuitCommand();
+            running = false;
+        }
     }
 
     public void MoveCommand(string input)
@@ -231,7 +240,6 @@ public class REPL
     {
         Console.WriteLine("Welcome to WW3 - type 'help' for instructions.");
 
-        bool running = true;
         do
         {
             Console.Write(game.CurrentPlayerIndex + "> ");
