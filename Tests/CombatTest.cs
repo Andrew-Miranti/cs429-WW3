@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -69,7 +68,7 @@ public class CombatTest
         defending.AddArmy(new Army(HEALTH), new Pos(1, 1));
         defending.AddArmy(new Army(HEALTH), new Pos(2, 2));
         var defending2 = new Player(manager, new Color(2, 2, 2));
-        defending2.AddArmy(new Army(HEALTH), new Pos(3, 3));
+        defending2.AddArmy(new Army(HEALTH), new Pos(1, 3));
         var players = new List<Player>();
         players.Add(attacking);
         players.Add(defending);

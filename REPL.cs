@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 public class REPL
 {
-    private const string Commands = @"help|end|mv|quit|print|capture|feed|resources|undo|gather|make";
+    private const string Commands = @"help|end|mv|quit|print|capture|feed|resources|undo|gather|make|save|hurt";
     private static readonly Regex Command = new Regex(@"(" + Commands + @")");
     private static readonly Regex Move = new Regex(@"mv (\d+) (\d+),(\d+)");
     private static readonly Regex Capture = new Regex(@"capture (\d+)");
@@ -11,6 +11,8 @@ public class REPL
     private static readonly Regex Undo = new Regex(@"undo (\d+)");
     private static readonly Regex Gather = new Regex(@"gather (\d+)");
     private static readonly Regex Make = new Regex(@"make (\d+),(\d+)");
+    private static readonly Regex Hurt = new Regex(@"hurt (\d+) (\d+)");
+
     private readonly Game game;
     private readonly Window window;
     private bool running = true;
@@ -32,6 +34,9 @@ public class REPL
         Console.WriteLine("undo id => Moves an army back to its original position for the turn");
         Console.WriteLine("gather id => Actively gathers resources under an army (consuming its turn)");
         Console.WriteLine("quit => exits the REPL and closes out the game");
+        Console.WriteLine("make x y => Creates an army at a target position");
+        Console.WriteLine("save => Saves the game to a file");
+        Console.WriteLine("hurt id amt => Reduces an army's health by amt");
     }
 
     public void EndCommand()
@@ -93,7 +98,7 @@ public class REPL
             if (player.ArmyExists(index))
             {
                 var armyPosition = player.ArmyPosition(index);
-                var armyProvince = game.World.GetProvinceAt(armyPosition);
+                var armyProvince = game.GameWorld.GetProvinceAt(armyPosition);
                 if (armyProvince.Owner != player)
                 {
                     armyProvince.Owner = player;
@@ -126,7 +131,7 @@ public class REPL
             if (player.ArmyExists(index) && !player.HasArmyActed(index))
             {
                 var armyPosition = player.ArmyPosition(index);
-                var province = game.World.GetProvinceAt(armyPosition);
+                var province = game.GameWorld.GetProvinceAt(armyPosition);
                 province.Gather(player);
                 player.ArmyActed(index);
             }
@@ -236,6 +241,37 @@ public class REPL
         }
     }
 
+    public void HurtCommand(string input)
+    {
+        Player player = game.CurrentPlayer;
+        var hurt = Hurt.Match(input);
+        if (hurt.Success)
+        {
+            var index = int.Parse(hurt.Groups[1].Value);
+            var amount = int.Parse(hurt.Groups[2].Value);
+
+            if (player.ArmyExists(index))
+            {
+                var army = player.ArmyList[index];
+                army.TakeDamage(amount);
+                Console.WriteLine("Army hurt " + hurt);
+            }
+            else
+            {
+                Console.WriteLine("Army index invalid");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Command must match feed [0-9]+ [0-9]+");
+        }
+    }
+
+    public void SaveCommand()
+    {
+        game.SaveToFile();
+    }
+
     public void Launch()
     {
         Console.WriteLine("Welcome to WW3 - type 'help' for instructions.");
@@ -292,6 +328,14 @@ public class REPL
                 else if (match.Value == "make")
                 {
                     MakeCommand(input);
+                }
+                else if (match.Value == "save")
+                {
+                    SaveCommand();
+                }
+                else if (match.Value == "hurt")
+                {
+                    HurtCommand(input);
                 }
             }
             else

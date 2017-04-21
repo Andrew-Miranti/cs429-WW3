@@ -259,7 +259,7 @@ public class Window : GameWindow
 
         GL.Clear(ClearBufferMask.ColorBufferBit);
 
-        World world = game.World;
+        World world = game.GameWorld;
         Render(world);
         foreach (var player in game.Players)
         {

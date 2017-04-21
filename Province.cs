@@ -1,6 +1,3 @@
-using System;
-using OpenTK.Graphics.OpenGL;
-
 public class Province
 {
     /**

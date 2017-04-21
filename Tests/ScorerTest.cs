@@ -10,7 +10,7 @@ public class ScorerTest
     [TestMethod]
     public void TestNoPlayers()
     {
-        var scorer = new Scorer(new List<Player>());
+        var scorer = new Scorer();
         scorer.UpdateScores(new World(MAPSFILE));
 
         // No actual assertions.  The only expected behavior here is that this test must complete without error.
@@ -22,7 +22,7 @@ public class ScorerTest
         var player = new Player(new ArmyManager(), new Color(0, 0, 0));
         var players = new List<Player>();
         players.Add(player);
-        var scorer = new Scorer(players);
+        var scorer = new Scorer();
         scorer.UpdateScores(new World(MAPSFILE));
 
         Assert.AreEqual(0, scorer.GetScore(player));
@@ -34,7 +34,7 @@ public class ScorerTest
         var player = new Player(new ArmyManager(), new Color(0, 0, 0));
         var players = new List<Player>();
         players.Add(player);
-        var scorer = new Scorer(players);
+        var scorer = new Scorer();
         var world = new World(MAPSFILE);
         int sum = 0;
         for (int i = 0; i < World.WIDTH; i++)
@@ -62,7 +62,7 @@ public class ScorerTest
         var players = new List<Player>();
         players.Add(player);
         players.Add(player2);
-        var scorer = new Scorer(players);
+        var scorer = new Scorer();
         var world = new World(MAPSFILE);
         int sum = 0;
         for (int i = 0; i < World.WIDTH; i++)
@@ -100,7 +100,7 @@ public class ScorerTest
         var player = new Player(new ArmyManager(), new Color(0, 0, 0));
         var players = new List<Player>();
         players.Add(player);
-        var scorer = new Scorer(players);
+        var scorer = new Scorer();
         var world = new World();
         var prov = world.GetProvinceAt(new Pos(0, 0));
         prov.City = new City("Urbana", num);

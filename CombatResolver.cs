@@ -40,7 +40,7 @@ public class CombatResolver
             {
                 if (armies.ArmyPosition(attacking).IsInRange(armies.ArmyPosition(defending), attacking.Range))
                 {
-                    defending.TakeDamage(generator.Next(0, DAMAGE));
+                    defending.TakeDamage(generator.Next(1, DAMAGE));
                 }
             }
         }

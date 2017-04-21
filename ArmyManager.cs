@@ -28,6 +28,11 @@ public class ArmyManager
         }
     }
 
+    public Pos ArmyStartingPosition(Army army)
+    {
+        return committedPositions[army];
+    }
+
     public bool CanPlaceArmy(Army army, Pos pos)
     {
         foreach (var placed in GetArmies())
@@ -48,9 +53,14 @@ public class ArmyManager
 
     public void AddArmy(Army army, Pos pos)
     {
+        CommitMoves();
         if (CanPlaceArmy(army, pos))
         {
             committedPositions[army] = pos;
+        }
+        else
+        {
+            throw new System.ArgumentException("Could not place army at " + pos.X + ", " + pos.Y);
         }
     }
 
@@ -78,10 +88,17 @@ public class ArmyManager
 
     public void Tick()
     {
+        CommitMoves();
+    }
+
+    public void CommitMoves()
+    {
         foreach (var pair in positions)
         {
             committedPositions[pair.Key] = pair.Value;
         }
+
+        positions.Clear();
     }
 
     public void UndoMove(Army army)

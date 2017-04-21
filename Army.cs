@@ -3,9 +3,11 @@ using System;
 public class Army
 {
     public const int DefaultMoveRange = 20;
-    public const int DefaultRange = 50;
+    public const int DefaultRange = 5;
 
-    private readonly int maxHealth = 100;
+    public const int MaxHealth = 100;
+
+    private int health;
 
     public Army(int health)
     {
@@ -20,17 +22,27 @@ public class Army
 
     public int MoveRange { get; private set; }
 
-    public int Health { get; private set; }
+    public int Health
+    {
+        get
+        {
+            return health;
+        }
+
+        private set
+        {
+            health = Math.Max(Math.Min(value, MaxHealth), 0);
+        }
+    }
 
     public void TakeDamage(int hurt)
     {
-        Health = Math.Max(Health - hurt, 0);
+        Health -= hurt;
     }
 
     public void FeedArmy(int food)
     {
-        this.Health += food;
-        this.Health = Math.Min(this.Health, maxHealth);
+        Health += food;
     }
 
     public void Tick()
