@@ -118,6 +118,18 @@ public class Game
         }
 
         combat.Engage(CurrentPlayer, Players);
+
+        foreach (var player in Players)
+        {
+            foreach (var army in player.ArmyList)
+            {
+                if (army.Health > 0)
+                {
+                    GameWorld.GetProvinceAt(Manager.ArmyPosition(army)).Owner = player;
+                }
+            }
+        }
+
         scorer.UpdateScores(GameWorld);
         Ticks += 1;
     }
