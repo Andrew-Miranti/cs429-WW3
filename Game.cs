@@ -11,8 +11,6 @@ public class Game
 
     private CombatResolver combat;
 
-    private int ticks = 0;
-
     public Game()
     {
         GameWorld = new World("maps.csv");
@@ -148,6 +146,7 @@ public class Game
         var playersArray = new JArray();
         var ownersArray = new JArray();
         root.Add("ticks", Ticks);
+        root.Add("finished", Finished);
         root.Add("players", playersArray);
         root.Add("owners", ownersArray);
         root.Add("current", new JValue(CurrentPlayerIndex));
