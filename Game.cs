@@ -11,6 +11,8 @@ public class Game
 
     private CombatResolver combat;
 
+    private int ticks = 0;
+
     public Game()
     {
         GameWorld = new World("maps.csv");
@@ -191,6 +193,7 @@ public class Game
         var name = PREFIX + System.DateTime.Now.Ticks + SUFFIX;
         File.WriteAllText(name, data);
     }
+
     public int WinCondition()
     {
         int winner = -1;
