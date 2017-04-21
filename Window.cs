@@ -552,6 +552,11 @@ public class Window : GameWindow
             centerY -= 1;
         }
 
+        if (e.KeyChar == 'p' && game.Manager.ArmyAt(pos) == null && game.GameWorld.GetProvinceAt(pos).Owner == game.CurrentPlayer)
+        {
+            game.CurrentPlayer.AddArmy(new Army(100), pos);
+        }
+
         if (e.KeyChar == 'n')
         {
             game.EndTurn();
